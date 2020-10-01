@@ -7,7 +7,7 @@ const User = mongoose.model("User")
 
 router.get('/allbooks',requiredLogin,(req,res)=>{
     Post.find()
-    .populate("postedBy","_id name")
+    .populate("postedBy","_id name email phone")
     .then(posts=>{
         res.json({posts})
     })

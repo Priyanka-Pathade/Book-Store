@@ -1,56 +1,96 @@
-import React,{useState,useContext,useEffect} from 'react'
-import {Modal, Button, ButtonToolbar} from 'react-bootstrap';
+import React, { useState, useContext, useEffect, Component } from 'react';
+import { Modal, ModalHeader, ModalBody, Button, Col, ButtonToolbar } from 'reactstrap';
 import Contact from './ContactToBuy';
-const FrontPage = () =>{
-    const [data,setData] = useState([])
+const FrontPage = () => {
+    const [data, setData] = useState([])
 
-    // const [show, setShow] = useState(false);
-    // const handleClose = () => setShow(false);
-    // const handleShow = () => setShow(true);
-  
-    useEffect(()=>{
-        fetch('/allbooks',{
-            headers:{
-                "Authorization":"Bearer "+localStorage.getItem("jwt")
-            }
-        }).then(res=>res.json())
-        .then(result=>{
-            setData(result.posts)
-            console.log(result)
-        })
-    },[])
-    return(
-            <div className="gallery">
-            {
-                data.map(item=>{
-                    if(item.checkFree=="Paid"){
-                    return(
+    useEffect(() => {
+        fetch('/allbooks', {
+                headers: {
+                    "Authorization": "Bearer " + localStorage.getItem("jwt")
+                }
+            }).then(res => res.json())
+            .then(result => {
+                setData(result.posts)
+                console.log(result)
+            })
+    }, [])
+    return ( <div className = "gallery" > {
+            data.map(item => {
+                if (item.checkFree == "Paid") {
+                    return (
                         // <div>
-                    <div className="card " style={{width:"30%"}}>
-                        <div className="card-image" >
-                            <img src={item.Book_photo} alt={item.title} />
-                            <a className="btn-floating halfway-fab waves-effect waves"><i className="material-icons" style={{color:"white"}}>favorite</i></a>
-                        </div>
-                        <div className="card-content">
-                            <p><b>Added by: </b>{item.postedBy.name}</p>
-                            {/* <p><b>Year: </b>{item.year}</p> */}
-                            <p><b>Publication/Edition:</b>{item.publication}</p>
-                            {/* <p><b>Email:</b>{item.postedBy._id}</p> */}
-                            <Contact obID={item.postedBy._id} />
-                            <p><b>Price: RS.</b>{item.price}</p>
-                            <button className="btn waves-effect waves-light #64b5f6 blue darken-1"
-                             style={{marginTop:"20px"}}>Contact to buy</button>
-                            <button className="btn waves-effect waves-light #388e3c green darken-2" style={{marginTop:"20px", marginLeft:"20px"}}>Book Details</button>
-                        </div>
-                    {/* </div> */}
+                        <div className = "card "
+                        style = {
+                            { width: "30%" }
+                        } >
+                        <div className = "card-image" >
+                        <img src = { item.Book_photo }
+                        alt = { item.title }
+                        /> 
+                        <a className = "btn-floating halfway-fab waves-effect waves" > < i className = "material-icons"
+                        style = {
+                            { color: "white" }
+                        } > favorite </i></a >
+                        </div> <
+                        div className = "card-content" >
+                        <p > < b > Added by: </b>{item.postedBy.name}</p > { /* <p><b>Year: </b>{item.year}</p> */ } 
+                        <p > < b > Publication / Edition: </b>{item.publication}</p > { /* <p><b>Email:</b>{item.postedBy._id}</p> */ } 
+                        <Contact obID = { item.postedBy._id }
+                        /> 
+                        <p > < b > Price: RS. </b>{item.price}</p >
 
-                    
-                    </div>
+                        <Contact_details ObjectID = { item.postedBy } > </Contact_details> 
+                        <button className = "btn waves-effect waves-light #388e3c green darken-2"
+                        style = {
+                            { marginTop: "20px", marginLeft: "20px" }
+                        } > Book Details </button> 
+                        </div > { /* </div> */ }
+
+
+                        </div>
                     )
-                    }
-                })
-            }
+                }
+            })
+        } 
+        </div>
+    )
+}
+
+class Contact_details extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            isModalOpen: false
+        };
+        this.toggleModal = this.toggleModal.bind(this);
+
+    }
+    toggleModal() {
+        this.setState({
+            isModalOpen: !this.state.isModalOpen
+        });
+    }
+
+    render() {
+        return ( <div >
+            <Button outline onClick = { this.toggleModal } > < span className = "fa fa-contact fa-lg" > </span>Contact To Buy</Button >
+            <Modal isOpen = { this.state.isModalOpen }
+            toggle = { this.toggleModal } >
+            <ModalHeader toggle = { this.toggleModal } > Contact To Buy </ModalHeader> 
+            <ModalBody >
+
+            <div >
+            <Col md = { 12 } >
+            <h3 > Owner Name: { this.props.ObjectID.name } </h3> 
+            <h3 > Email ID: { this.props.ObjectID.email } </h3>   
+            <h3 > Mobile Number: { this.props.ObjectID.phone } </h3>  
+            </Col > 
+            </div > 
+            </ModalBody> 
+            </Modal >
             </div>
-)
+        );
+    }
 }
 export default FrontPage
